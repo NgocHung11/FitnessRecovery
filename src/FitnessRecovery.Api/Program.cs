@@ -26,6 +26,9 @@ using FitnessRecovery.Features.Recommendation.Queries.GetTodayRecommendation;
 using FitnessRecovery.Features.Recommendation.Queries.GetRecommendationHistory;
 using FitnessRecovery.Features.Dashboard.Queries.GetDailyDashboard;
 using FitnessRecovery.Features.Dashboard.Queries.GetAnalytics;
+using FitnessRecovery.Features.Dashboard.Queries.GetWeeklyReports;
+using FitnessRecovery.Features.Dashboard.Contracts;
+using FitnessRecovery.Infrastructure.Persistence.Mongo;
 using FitnessRecovery.Infrastructure.Authentication;
 using FitnessRecovery.Infrastructure.Persistence;
 using FitnessRecovery.Infrastructure.Repositories;
@@ -123,6 +126,11 @@ builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IRecoveryRepository, RecoveryRepository>();
 builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>();
+builder.Services.AddSingleton<MongoDbContext>();
+builder.Services.AddScoped<IHealthRecordMongoRepository, HealthRecordMongoRepository>();
+builder.Services.AddScoped<IRecoveryAnalysisMongoRepository, RecoveryAnalysisMongoRepository>();
+builder.Services.AddScoped<IWeeklyReportMongoRepository, WeeklyReportMongoRepository>();
+builder.Services.AddScoped<MongoMigrationService>();
 
 // Auto-register Validators
 builder.Services.AddValidatorsFromAssembly(typeof(FitnessRecovery.Features.Auth.Domain.User).Assembly);
@@ -149,6 +157,7 @@ builder.Services.AddScoped<GetTodayRecommendationHandler>();
 builder.Services.AddScoped<GetRecommendationHistoryHandler>();
 builder.Services.AddScoped<GetDailyDashboardHandler>();
 builder.Services.AddScoped<GetAnalyticsHandler>();
+builder.Services.AddScoped<GetWeeklyReportsHandler>();
 
 var app = builder.Build();
 
@@ -212,12 +221,20 @@ app.MapGetRecommendationHistory();
 // Map Dashboard Endpoints Slices
 app.MapGetDailyDashboard();
 app.MapGetAnalytics();
+app.MapGetWeeklyReports();
 
 // Automatic DB Migrations on startup
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await dbContext.Database.MigrateAsync();
+
+    // Initialize MongoDB indexes and migration sync
+    var mongoContext = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
+    await MongoIndexConfig.CreateIndexesAsync(mongoContext);
+
+    var mongoMigration = scope.ServiceProvider.GetRequiredService<MongoMigrationService>();
+    await mongoMigration.MigrateAsync();
 }
 
 app.Run();
