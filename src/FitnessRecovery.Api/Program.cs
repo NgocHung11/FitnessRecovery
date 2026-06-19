@@ -21,6 +21,9 @@ using FitnessRecovery.Features.Health.Contracts;
 using FitnessRecovery.Features.Recovery.Queries.GetTodayRecovery;
 using FitnessRecovery.Features.Recovery.Queries.GetRecoveryHistory;
 using FitnessRecovery.Features.Recovery.Contracts;
+using FitnessRecovery.Features.Recommendation.Contracts;
+using FitnessRecovery.Features.Recommendation.Queries.GetTodayRecommendation;
+using FitnessRecovery.Features.Recommendation.Queries.GetRecommendationHistory;
 using FitnessRecovery.Infrastructure.Authentication;
 using FitnessRecovery.Infrastructure.Persistence;
 using FitnessRecovery.Infrastructure.Repositories;
@@ -117,6 +120,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IRecoveryRepository, RecoveryRepository>();
+builder.Services.AddScoped<IRecommendationRepository, RecommendationRepository>();
 
 // Auto-register Validators
 builder.Services.AddValidatorsFromAssembly(typeof(FitnessRecovery.Features.Auth.Domain.User).Assembly);
@@ -139,6 +143,8 @@ builder.Services.AddScoped<GetHealthRecordHandler>();
 builder.Services.AddScoped<GetHealthRecordHistoryHandler>();
 builder.Services.AddScoped<GetTodayRecoveryHandler>();
 builder.Services.AddScoped<GetRecoveryHistoryHandler>();
+builder.Services.AddScoped<GetTodayRecommendationHandler>();
+builder.Services.AddScoped<GetRecommendationHistoryHandler>();
 
 var app = builder.Build();
 
@@ -194,6 +200,10 @@ app.MapGetHealthRecordHistory();
 // Map Recovery Endpoints Slices
 app.MapGetTodayRecovery();
 app.MapGetRecoveryHistory();
+
+// Map Recommendation Endpoints Slices
+app.MapGetTodayRecommendation();
+app.MapGetRecommendationHistory();
 
 // Automatic DB Migrations on startup
 using (var scope = app.Services.CreateScope())
