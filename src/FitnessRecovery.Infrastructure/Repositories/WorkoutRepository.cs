@@ -60,9 +60,10 @@ public class WorkoutRepository : IWorkoutRepository
 
     public async Task<List<WorkoutSession>> GetWorkoutsForDateAsync(Guid userId, DateOnly date)
     {
-        var targetDate = date.ToDateTime(TimeOnly.MinValue);
+        var startDate = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+        var endDate = startDate.AddDays(1);
         return await _context.WorkoutSessions
-            .Where(w => w.UserId == userId && w.WorkoutDate.Date == targetDate.Date)
+            .Where(w => w.UserId == userId && w.WorkoutDate >= startDate && w.WorkoutDate < endDate)
             .ToListAsync();
     }
 }
