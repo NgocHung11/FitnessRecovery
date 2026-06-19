@@ -42,5 +42,13 @@ appsettings.local.json
 
 # Docker & Containers
 .docker/
+docker-compose.yml
 docker-compose.override.yml
 docker-compose.local.yml
+# Database data directories
+/postgres_data/
+/redis_data/
+/mongo_data/
+data/
+db/
+*.db

@@ -10,10 +10,14 @@ namespace FitnessRecovery.Features.Health.Commands.UpdateHealthRecord;
 public class UpdateHealthRecordHandler
 {
     private readonly IHealthRecordRepository _healthRecordRepository;
+    private readonly IHealthRecordMongoRepository _healthRecordMongoRepository;
 
-    public UpdateHealthRecordHandler(IHealthRecordRepository healthRecordRepository)
+    public UpdateHealthRecordHandler(
+        IHealthRecordRepository healthRecordRepository,
+        IHealthRecordMongoRepository healthRecordMongoRepository)
     {
         _healthRecordRepository = healthRecordRepository;
+        _healthRecordMongoRepository = healthRecordMongoRepository;
     }
 
     public async Task<Result> HandleAsync(UpdateHealthRecordCommand command, CancellationToken cancellationToken = default)
@@ -41,6 +45,7 @@ public class UpdateHealthRecordHandler
                 command.CaloriesBurned);
 
             await _healthRecordRepository.UpdateAsync(record);
+            await _healthRecordMongoRepository.UpsertAsync(record);
 
             return Result.Success();
         }

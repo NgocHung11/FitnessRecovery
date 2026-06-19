@@ -26,6 +26,7 @@ public class DashboardTests
     private readonly IHealthRecordRepository _healthRecordRepository = Substitute.For<IHealthRecordRepository>();
     private readonly IWorkoutRepository _workoutRepository = Substitute.For<IWorkoutRepository>();
     private readonly IRecommendationRepository _recommendationRepository = Substitute.For<IRecommendationRepository>();
+    private readonly IRecoveryAnalysisMongoRepository _recoveryAnalysisMongoRepository = Substitute.For<IRecoveryAnalysisMongoRepository>();
 
     private readonly GetTodayRecoveryHandler _getTodayRecoveryHandler;
     private readonly GetDailyDashboardHandler _dailyDashboardHandler;
@@ -37,7 +38,8 @@ public class DashboardTests
             _recoveryRepository,
             _healthRecordRepository,
             _workoutRepository,
-            _recommendationRepository);
+            _recommendationRepository,
+            _recoveryAnalysisMongoRepository);
 
         _dailyDashboardHandler = new GetDailyDashboardHandler(
             _workoutRepository,

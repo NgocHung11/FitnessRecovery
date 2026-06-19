@@ -18,6 +18,7 @@ namespace FitnessRecovery.UnitTests;
 public class HealthTests
 {
     private readonly IHealthRecordRepository _healthRecordRepository = Substitute.For<IHealthRecordRepository>();
+    private readonly IHealthRecordMongoRepository _healthRecordMongoRepository = Substitute.For<IHealthRecordMongoRepository>();
     private readonly CreateHealthRecordHandler _createHandler;
     private readonly UpdateHealthRecordHandler _updateHandler;
     private readonly GetHealthRecordHandler _getHandler;
@@ -25,8 +26,8 @@ public class HealthTests
 
     public HealthTests()
     {
-        _createHandler = new CreateHealthRecordHandler(_healthRecordRepository);
-        _updateHandler = new UpdateHealthRecordHandler(_healthRecordRepository);
+        _createHandler = new CreateHealthRecordHandler(_healthRecordRepository, _healthRecordMongoRepository);
+        _updateHandler = new UpdateHealthRecordHandler(_healthRecordRepository, _healthRecordMongoRepository);
         _getHandler = new GetHealthRecordHandler(_healthRecordRepository);
         _getHistoryHandler = new GetHealthRecordHistoryHandler(_healthRecordRepository);
     }

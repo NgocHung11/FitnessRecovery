@@ -18,17 +18,20 @@ public class GetTodayRecoveryHandler
     private readonly IHealthRecordRepository _healthRecordRepository;
     private readonly IWorkoutRepository _workoutRepository;
     private readonly IRecommendationRepository _recommendationRepository;
+    private readonly IRecoveryAnalysisMongoRepository _recoveryAnalysisMongoRepository;
 
     public GetTodayRecoveryHandler(
         IRecoveryRepository recoveryRepository,
         IHealthRecordRepository healthRecordRepository,
         IWorkoutRepository workoutRepository,
-        IRecommendationRepository recommendationRepository)
+        IRecommendationRepository recommendationRepository,
+        IRecoveryAnalysisMongoRepository recoveryAnalysisMongoRepository)
     {
         _recoveryRepository = recoveryRepository;
         _healthRecordRepository = healthRecordRepository;
         _workoutRepository = workoutRepository;
         _recommendationRepository = recommendationRepository;
+        _recoveryAnalysisMongoRepository = recoveryAnalysisMongoRepository;
     }
 
     public async Task<Result<RecoveryAnalysisDto>> HandleAsync(GetTodayRecoveryQuery query, CancellationToken cancellationToken = default)
@@ -74,6 +77,9 @@ public class GetTodayRecoveryHandler
         {
             await _recoveryRepository.AddAsync(newAnalysis);
         }
+
+        // Sync to MongoDB
+        await _recoveryAnalysisMongoRepository.UpsertAsync(newAnalysis);
 
         // 4.5. Upsert recommendation
         var recommendation = FitnessRecovery.Features.Recommendation.Domain.Recommendation.CreateFromScore(query.UserId, newAnalysis.Id, newAnalysis.RecoveryScore.Value);

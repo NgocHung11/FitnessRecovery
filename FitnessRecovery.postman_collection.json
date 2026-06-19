@@ -812,6 +812,36 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "22. Get Weekly Reports",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/reports/weekly",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"reports",
+						"weekly"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
