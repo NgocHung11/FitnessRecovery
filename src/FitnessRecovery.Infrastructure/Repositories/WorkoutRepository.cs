@@ -57,4 +57,13 @@ public class WorkoutRepository : IWorkoutRepository
         _context.WorkoutSessions.Remove(session);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<WorkoutSession>> GetWorkoutsForDateAsync(Guid userId, DateOnly date)
+    {
+        var startDate = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+        var endDate = startDate.AddDays(1);
+        return await _context.WorkoutSessions
+            .Where(w => w.UserId == userId && w.WorkoutDate >= startDate && w.WorkoutDate < endDate)
+            .ToListAsync();
+    }
 }
